@@ -3,10 +3,11 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 
-const DepartmentService = require("./services/DepartmentService");
+const { DepartmentService, UserService } = require("./services");
 
 // Initialize department
 DepartmentService.initialize();
+UserService.initialize();
 
 const app = express();
 const port = process.env.PORT || 3000;

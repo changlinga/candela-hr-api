@@ -15,6 +15,32 @@ const UserSchema = new mongoose.Schema(
       default: null,
       trim: true
     },
+    birthDate: {
+      type: Date,
+      default: null
+    },
+    gender: {
+      type: String,
+      lowercase: true,
+      default: null,
+      trim: true
+    },
+    contactNo: {
+      type: String,
+      default: null,
+      trim: true
+    },
+    contactNoCountryCode: {
+      type: String,
+      default: "+65",
+      trim: true
+    },
+    email: {
+      type: String,
+      lowercase: true,
+      trim: true,
+      match: [/\S+@\S+\.\S+/, "is not a valid email"]
+    },
     departmentId: {
       type: String,
       default: null
