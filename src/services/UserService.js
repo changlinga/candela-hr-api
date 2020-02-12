@@ -89,7 +89,7 @@ class UserService {
       searchFilter.searchMax = 1;
       searchFilter.searchPage = 1;
       let result = await this.getAllUser(searchFilter);
-      return result;
+      return result.length > 0 ? result[0] : null;
     } catch (err) {
       throw err;
     }

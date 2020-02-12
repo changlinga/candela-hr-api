@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 
 const { DepartmentService, UserService } = require("./services");
 
@@ -9,8 +10,10 @@ const { DepartmentService, UserService } = require("./services");
 DepartmentService.initialize();
 UserService.initialize();
 
-const app = express();
 const port = process.env.PORT || 3000;
+
+const app = express();
+app.use(bodyParser.json());
 
 mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,

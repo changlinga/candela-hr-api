@@ -51,7 +51,7 @@ class AccesstokenService {
 
       const tokenData = {
         token: jwt
-          .sign({ id: user._id, tokenType: "auth" }, JWT_SECRET)
+          .sign({ id: user._id, tokenType: "auth" }, process.env.JWT_SECRET)
           .toString(),
         expiresAt: moment()
           .add(1, "day")

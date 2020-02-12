@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const _ = require("lodash");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -67,5 +68,11 @@ const UserSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+UserSchema.methods.toJSON = function() {
+  const user = this;
+  const userObj = _.omit(user.toObject(), ["password"]);
+  return userObj;
+};
 
 module.exports = mongoose.model("User", UserSchema);
