@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const _ = require("lodash");
+const moment = require("moment");
 
 const { UserSearchFilter } = require("../entity/searchFilter");
 const { UserService, AccesstokenService } = require("../services");
@@ -69,6 +70,44 @@ router.get("", authenticate, async (req, res) => {
 
     Response.success(res, {
       users
+    });
+  } catch (error) {
+    Response.error(res, error);
+  }
+});
+
+/**
+ * POST /users
+ * REST API to add a user
+ */
+router.post("", authenticate, async (req, res) => {
+  try {
+    // Get user data
+    const params = _.pick(req.body, [
+      "staffId",
+      "name",
+      "designation",
+      "startDate",
+      "email"
+    ]);
+
+    if (!params.staffId) throw new Error("Staff ID is required.");
+    if (!params.name) throw new Error("Name is required.");
+    if (!params.startDate) throw new Error("Join date is required.");
+
+    // Check if user nric already exist
+    let userSearchFilter = new UserSearchFilter();
+    userSearchFilter.staffId = params.staffId;
+    let userExist = await UserService.getUser(userSearchFilter);
+    if (userExist) throw new Error(`Staff ID ${params.staffId} exists.`);
+
+    // Convert dates
+    params.startDate = moment(params.startDate, "YYYY-MM-DD").toDate();
+
+    let user = await UserService.create(params);
+
+    Response.success(res, {
+      user
     });
   } catch (error) {
     Response.error(res, error);
