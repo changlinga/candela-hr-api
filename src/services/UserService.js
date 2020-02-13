@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const { User } = require("../models");
 const {
   UserSearchFilter,
@@ -6,6 +8,8 @@ const {
 const DepartmentService = require("../services/DepartmentService");
 const { USER_GENDER } = require("../entity/constant/user");
 const { getHashedPassword } = require("../utils/password_bcrypt_service");
+
+const ObjectId = mongoose.Types.ObjectId;
 
 class UserService {
   constructor() {
@@ -55,13 +59,17 @@ class UserService {
       // filter by id
       if (searchFilter._id) params._id = new ObjectId(searchFilter._id);
 
-      // filter by staffid
+      // filter by staffId
       if (searchFilter.staffId)
         params.staffId = searchFilter.staffId.toLowerCase();
 
       // filter by name
       if (searchFilter.name)
         params.name = { $regex: searchFilter.name, $options: "i" };
+
+      // filter by departmentId
+      if (searchFilter.departmentId)
+        params.departmentId = searchFilter.departmentId;
 
       // pagination
       let max = parseInt(searchFilter.searchMax);

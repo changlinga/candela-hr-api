@@ -1,4 +1,8 @@
+const mongoose = require("mongoose");
+
 const { Department } = require("../models");
+
+const ObjectId = mongoose.Types.ObjectId;
 
 class DepartmentService {
   constructor() {

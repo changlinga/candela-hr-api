@@ -5,6 +5,9 @@ const { UserSearchFilter } = require("../entity/searchFilter");
 const { UserService, AccesstokenService } = require("../services");
 const { decryptBase64withPrivateKey } = require("../utils/data_encryption");
 const { compareHashedPassword } = require("../utils/password_bcrypt_service");
+const Response = require("../utils/response");
+const { UnauthorizedError } = require("../utils/error");
+const { authenticate } = require("../middleware/authenticate");
 
 /**
  * POST /users/login
@@ -17,7 +20,7 @@ router.post("/login", async (req, res) => {
 
     // Check if empty
     if (!params.staffId || !params.password) {
-      throw new Error("Staff ID or password is incorrect.");
+      throw new UnauthorizedError("Staff ID or password is incorrect.");
     }
 
     // Decrypt data
@@ -29,7 +32,7 @@ router.post("/login", async (req, res) => {
     let user = await UserService.getUser(userSearchFilter);
 
     if (!user) {
-      throw new Error("Staff ID or password is incorrect.");
+      throw new UnauthorizedError("Staff ID or password is incorrect.");
     }
 
     // Validate user password
@@ -38,20 +41,37 @@ router.post("/login", async (req, res) => {
         req,
         user
       );
-      res.status(200).send({
+      Response.success(res, {
         user: {
           ...user.toJSON(),
           accesstoken: accesstoken.token
         }
       });
     } else {
-      throw new Error("Staff ID or password is incorrect.");
+      throw new UnauthorizedError("Staff ID or password is incorrect.");
     }
   } catch (error) {
-    res.status(401).send({
-      errorMessage:
-        error && error.message ? error.message : "Something went wrong..."
+    Response.error(res, error);
+  }
+});
+
+/**
+ * GET /users
+ * REST API to get list of users
+ */
+router.get("", authenticate, async (req, res) => {
+  try {
+    let userSearchFilter = new UserSearchFilter();
+    if (req.query.query) {
+      userSearchFilter.name = req.query.query;
+    }
+    let users = await UserService.getAllUser(userSearchFilter);
+
+    Response.success(res, {
+      users
     });
+  } catch (error) {
+    Response.error(res, error);
   }
 });
 

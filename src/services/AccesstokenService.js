@@ -1,7 +1,11 @@
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+
 const { Accesstoken } = require("../models");
 const AccesstokenSearchFilter = require("../entity/searchFilter/AccesstokenSearchFilter");
+
+const ObjectId = mongoose.Types.ObjectId;
 
 class AccesstokenService {
   constructor() {
@@ -14,7 +18,7 @@ class AccesstokenService {
       let params = {};
 
       // check filter _id
-      if (searchFilter._id) params._id = searchFilter._id;
+      if (searchFilter._id) params._id = new ObjectId(searchFilter._id);
 
       // check filter token
       if (searchFilter.token) params.token = searchFilter.token;
@@ -24,11 +28,6 @@ class AccesstokenService {
 
       // Get result
       let result = await this.db.find(params);
-
-      // Limit result
-      if (searchFilter.searchMax) {
-        result = result.max(searchFilter.searchMax);
-      }
       return result;
     } catch (err) {
       throw err;
@@ -37,9 +36,8 @@ class AccesstokenService {
 
   async getAccesstoken(searchFilter = new AccesstokenSearchFilter()) {
     try {
-      searchFilter.searchMax = 1;
       let result = await this.getAllAccesstoken(searchFilter);
-      return result;
+      return result.length > 0 ? result[0] : null;
     } catch (err) {
       throw err;
     }
@@ -63,6 +61,29 @@ class AccesstokenService {
 
       const newAccesstoken = new Accesstoken(tokenData);
       let result = await newAccesstoken.save();
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async editAccessToken(_id, updatedData) {
+    try {
+      if (!ObjectId.isValid(_id)) throw new Error("_id is missing");
+      if (!updatedData) throw new Error("updated data is missing");
+
+      // Prepare updated data
+      let queryData = { $set: updatedData };
+
+      // Prepare query
+      let queryParam = { _id: new ObjectId(_id) };
+      let queryOption = { new: true };
+
+      let result = await this.db.findOneAndUpdate(
+        queryParam,
+        queryData,
+        queryOption
+      );
       return result;
     } catch (err) {
       throw err;

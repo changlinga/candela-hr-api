@@ -3,7 +3,6 @@ class AccesstokenSearchFilter {
     this._id = undefined;
     this.token = undefined;
     this.userId = undefined;
-    this.searchMax = undefined;
   }
 }
 

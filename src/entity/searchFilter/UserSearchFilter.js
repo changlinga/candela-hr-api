@@ -3,6 +3,7 @@ class UserSearchFilter {
     this._id;
     this.staffId = undefined;
     this.name = undefined;
+    this.departmentId = undefined;
     this.searchPage = 1;
     this.searchMax = 10;
   }

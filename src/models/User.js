@@ -55,7 +55,7 @@ const UserSchema = new mongoose.Schema(
       type: Date,
       default: null
     },
-    endDate: {
+    terminationDate: {
       type: Date,
       default: null
     },
